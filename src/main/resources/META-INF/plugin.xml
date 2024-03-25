@@ -23,10 +23,6 @@
 
     <!-- Extension points defined by the plugin.
          Read more: https://plugins.jetbrains.com/docs/intellij/plugin-extension-points.html -->
-    <extensions defaultExtensionNs="com.intellij">
-
-    </extensions>
-
     <actions>
         <group id="com.apla.Actions.GraphActionGroup"
                class="com.apla.Actions.GraphActionGroup"
@@ -37,18 +33,10 @@
             <action
                     id="com.apla.Actions.VirtualStructureAction"
                     class="com.apla.Actions.VirtualStructureAction"
-                    text="Generate virtual structure"
+                    text="Happy apphost"
                     description="Generate virtual structure"
             >
             </action>
-            <action
-                    id="com.apla.Actions.GraphViewAction"
-                    class="com.apla.Actions.GraphViewAction"
-                    text="View Apphost Graph"
-                    description="View apphost graph"
-            >
-            </action>
-            <separator />
         </group>
     </actions>
 </idea-plugin>
