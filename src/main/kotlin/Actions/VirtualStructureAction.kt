@@ -1,20 +1,14 @@
 package com.apla.Actions
 
 import ApphostToolWindow.ApphostToolWindow
-import com.apla.Graph.Deserializer as GraphDeserializer
-import com.google.gson.GsonBuilder
+import Graph.Data
 import com.intellij.openapi.actionSystem.AnAction
 import com.intellij.openapi.actionSystem.AnActionEvent
 import com.intellij.openapi.actionSystem.CommonDataKeys
-import com.apla.Graph.SourceData as GraphSourceData
+import com.intellij.openapi.vfs.VfsUtil
 
 
 class VirtualStructureAction() : AnAction() {
-    val gson = GsonBuilder()
-        .registerTypeAdapter(GraphSourceData.NodeData::class.java, GraphDeserializer(GsonBuilder().create()))
-        .create()
-
-
     override fun actionPerformed(event: AnActionEvent) {
         val selectedPsiFile = event.getData(CommonDataKeys.PSI_FILE) ?: return
         val selectedVirtualFile = selectedPsiFile.virtualFile;
@@ -23,6 +17,9 @@ class VirtualStructureAction() : AnAction() {
             return;
         }
 
-        ApphostToolWindow(selectedPsiFile).register()
+        val jsonString = VfsUtil.loadText(selectedVirtualFile);
+        val graphData = Data(jsonString)
+
+        ApphostToolWindow(selectedPsiFile.name, selectedPsiFile.project, graphData).register()
     }
 }

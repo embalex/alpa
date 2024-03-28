@@ -1,15 +1,14 @@
 package ApphostToolWindow
 
-import com.intellij.ide.actions.ActivateToolWindowAction
+import Graph.Data as GraphData
 import com.intellij.openapi.project.Project
 import com.intellij.openapi.wm.*
-import com.intellij.psi.PsiFile
 import java.rmi.UnexpectedException
 
-class ApphostToolWindow(val psiFile: PsiFile) {
+class ApphostToolWindow(private val name: String, private val project: Project, val graphData: GraphData) {
     private val toolWindowNamePrefix = "Apphost graph:"
-    private val toolWindowName = "$toolWindowNamePrefix ${psiFile.name}"
-    private val toolWindowManager = ToolWindowManager.getInstance(psiFile.project)
+    private val toolWindowName = "$toolWindowNamePrefix $name"
+    private val toolWindowManager = ToolWindowManager.getInstance(project)
     public val hasToolWindow = toolWindowManager.getToolWindow(toolWindowName) != null
 
     private fun toolWindow(): ToolWindow {
@@ -41,12 +40,13 @@ class ApphostToolWindow(val psiFile: PsiFile) {
         }
 
         val toolWindow = ToolWindowManager
-            .getInstance(psiFile.project)
+            .getInstance(project)
             .registerToolWindow(toolWindowName, registerToolWindowTask)
 
         toolWindow.setIcon(Icons.Collection.Watch)
         toolWindow.setType(ToolWindowType.DOCKED, null)
-        val toolWindowContent = Content(toolWindow)
+
+        val toolWindowContent = Content(toolWindow, ViewModel(graphData))
         val content = toolWindow.contentManager.factory.createContent(toolWindowContent.contentPanel, toolWindowName, false)
         toolWindow.contentManager.addContent(content)
 
