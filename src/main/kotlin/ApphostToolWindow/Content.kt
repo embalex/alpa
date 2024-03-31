@@ -24,6 +24,7 @@ class Content(private val toolWindow: ToolWindow, private val treeModel: ViewMod
 
         tree.model = treeModel.model
         tree.cellRenderer = TreeCellRender()
+        tree.addMouseListener(MouseListener(tree, toolWindow.project))
         panel.add(tree)
 
         return panel
