@@ -7,6 +7,16 @@ import java.rmi.UnexpectedException
 
 
 sealed class BackendNodeTypeData {
+    data class SubgraphData(
+        val timeout: String,
+
+        // Attempts
+        val maxAttempts: Int,
+
+        // Responsibles
+        val abcService: List<SourceData.BackendNodeABCService>,
+        val messengerChatNames: List<String>,
+    ) : BackendNodeTypeData()
     data class BackendData(
         val backendName: String,
         val timeout: String,
@@ -64,6 +74,7 @@ class BackendNode(sourceNodeName: String, sourceData: SourceData) {
                         functionName = rrEmbeddedBackend.embed.find { mapKeyValue -> mapKeyValue["type"] == "template_params" }!!["template"]!!
                     )
                 }
+            is SourceData.NodeData.SubgraphNodeData -> createSubgraphData(srcBack)
             else -> throw UnexpectedException("Node $sourceNodeName has type Embedded")
         }
     }
@@ -78,7 +89,7 @@ class Data(jsonString: String) {
             .registerTypeAdapter(SourceData.NodeData::class.java, Deserializer(GsonBuilder().create()))
             .create()
 
-        val sourceData: SourceData = gson.fromJson(jsonString, SourceData::class.java)
+        val sourceData: SourceData = gson.fromJson(updateKeysToCamelCase(jsonString), SourceData::class.java)
         sourceData.settings.nodeDeps.forEach( fun (name, _) {
             if (nodesWithoutBackend.contains(name)) {
                 return

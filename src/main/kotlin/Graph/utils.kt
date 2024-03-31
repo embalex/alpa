@@ -12,6 +12,15 @@ fun createBackendData(src: SourceData.NodeData.BackendNodeData) : BackendNodeTyp
     )
 }
 
+fun createSubgraphData(src: SourceData.NodeData.SubgraphNodeData) : BackendNodeTypeData.SubgraphData {
+    return BackendNodeTypeData.SubgraphData(
+        timeout = src.params.timeout,
+        maxAttempts = src.params.attempts.maxAttempts,
+        abcService = src.params.responsibles.abcService,
+        messengerChatNames = src.params.responsibles.messengerChatNames
+    )
+}
+
 fun createRRData(
     src: SourceData.NodeData.BackendNodeData,
     servantName: String,
@@ -58,4 +67,14 @@ fun findRREmbeddedBackend(inputDeps: List<String>, backends: Map<String, SourceD
     }
 
     return includedEmbeddedNodes.toList()[0].second
+}
+
+fun snakeToCamelCase(value: String): String {
+    val pattern = "_[a-z]".toRegex()
+    return value.replace(pattern) { it.value.last().uppercase() }
+}
+
+fun updateKeysToCamelCase(value: String): String {
+    val keyPattern = "\".*_[a-z]*\"\\s*:".toRegex()
+    return value.replace(keyPattern) { snakeToCamelCase(it.value) }
 }

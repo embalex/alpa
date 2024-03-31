@@ -1,5 +1,6 @@
 package com.apla.Graph
 
+import Graph.updateKeysToCamelCase
 import com.google.gson.Gson
 import com.google.gson.JsonDeserializationContext
 import com.google.gson.JsonDeserializer
@@ -9,6 +10,7 @@ import java.lang.reflect.Type
 data class SourceData (
     val settings: Settings,
 ) {
+    data class SubgraphNodeParams(val attempts: BackendNodeAttempts, val responsibles: Responsibles, val timeout: String, val handler: String)
     data class BackendNodeParams(val attempts: BackendNodeAttempts, val responsibles: Responsibles, val timeout: String)
     data class BackendNodeAttempts(val maxAttempts: Int)
     data class Responsibles(val abcService: List<BackendNodeABCService>, val messengerChatNames: List<String>)
@@ -18,6 +20,7 @@ data class SourceData (
         data class BackendNodeData (val backendName: String, val params: BackendNodeParams) : NodeData()
         data class EmbeddedNodeData(val embed: List<Map<String, String>>) : NodeData()
         object TransparentData : NodeData()
+        data class SubgraphNodeData(val params: SubgraphNodeParams) : NodeData()
     }
 
     data class InputDeps(val inputDeps : List<String>)
@@ -41,7 +44,11 @@ class Deserializer(private val gson: Gson) : JsonDeserializer<SourceData.NodeDat
                 else -> throw IllegalArgumentException("Unexpected nodeType $nodeType")
             }
         } else {
-            gson.fromJson(nodeDataSourceObject.toString(), SourceData.NodeData.BackendNodeData::class.java)
+            if (nodeDataSourceObject.get("backendName").asString == "GRPC_SELF") {
+                return gson.fromJson(nodeDataSourceObject.toString(), SourceData.NodeData.SubgraphNodeData::class.java)
+            } else {
+                return gson.fromJson(nodeDataSourceObject.toString(), SourceData.NodeData.BackendNodeData::class.java)
+            }
         }
     }
 }
