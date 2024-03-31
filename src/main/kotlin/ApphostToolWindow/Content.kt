@@ -23,6 +23,7 @@ class Content(private val toolWindow: ToolWindow, private val treeModel: ViewMod
         val tree = Tree()
 
         tree.model = treeModel.model
+        tree.cellRenderer = TreeCellRender()
         panel.add(tree)
 
         return panel

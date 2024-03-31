@@ -12,7 +12,7 @@ class ViewModel (
     init {
         val backendsNode = DefaultMutableTreeNode("Backends")
         graphData.nodeList.forEach(fun (backend) {
-            backendsNode.add(DefaultMutableTreeNode(BackendView(backend)))
+            backendsNode.add(BackendView(backend))
         })
 
         model = DefaultTreeModel(backendsNode)
